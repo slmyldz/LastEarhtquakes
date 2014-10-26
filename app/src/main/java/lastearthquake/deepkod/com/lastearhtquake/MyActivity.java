@@ -1,22 +1,27 @@
 package lastearthquake.deepkod.com.lastearhtquake;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -27,8 +32,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.apache.http.Header;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -37,9 +40,6 @@ import org.xml.sax.SAXException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -166,75 +166,52 @@ public class MyActivity extends Activity {
         MarkerOptions marker = new MarkerOptions().position(new LatLng(model.getLatitude(),model.getLongitude()))
                 .title(model.getLocation()+" "+model.getMagnitude()+"\n"+model.getLink())
                 .flat(true);
-        if(Double.parseDouble(model.getMagnitude())>=6.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        else if(Double.parseDouble(model.getMagnitude())>=5.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-        else if(Double.parseDouble(model.getMagnitude())>=4.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-        else if(Double.parseDouble(model.getMagnitude())>=2.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        else if(Double.parseDouble(model.getMagnitude())>=1.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        else
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        try{
+            marker.icon(BitmapDescriptorFactory.fromBitmap(getCircle(Double.parseDouble(model.getMagnitude()))));
+            googleMap.addMarker(marker);
+
+        }catch (IllegalArgumentException e ){
+
+        }
 
 
 
 
 
-
-        googleMap.addMarker(marker);
-    }
+   }
     void addMarker(Feature model){
 
         MarkerOptions marker = new MarkerOptions().position(new LatLng(model.getGeometry().getCoordinates().get(1),model.getGeometry().getCoordinates().get(0)))
                 .flat(true);
 
-        if(model.getProperties().getMag()>=6.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        else if(model.getProperties().getMag()>=5.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-        else if(model.getProperties().getMag()>=4.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-        else if(model.getProperties().getMag()>=2.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        else if(model.getProperties().getMag()>=1.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        else
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-
-
-
-
-
-
+        try{
+        marker.icon(BitmapDescriptorFactory.fromBitmap(getCircle(model.getProperties().getMag())));
         googleMap.addMarker(marker);
+
+        }catch (IllegalArgumentException e ){
+
+        }
+
+
+
+
     }
 
     void addMarker(String date,String loc, String lat, String lng, String mag, String depth){
         MarkerOptions marker = new MarkerOptions().position(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)))
                      .flat(true);
-        if(Double.parseDouble(mag)>=6.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        else if(Double.parseDouble(mag)>=5.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE));
-        else if(Double.parseDouble(mag)>=4.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
-        else if(Double.parseDouble(mag)>=2.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        else if(Double.parseDouble(mag)>=1.0)
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-        else
-            marker.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+      try{
+            marker.icon(BitmapDescriptorFactory.fromBitmap(getCircle(Double.parseDouble(mag))));
+            googleMap.addMarker(marker);
+
+        }catch (IllegalArgumentException e ){
+
+        }
 
 
 
 
-
-
-        googleMap.addMarker(marker);
-    }
+     }
     @Override
     protected void onResume() {
         super.onResume();
@@ -347,18 +324,67 @@ public class MyActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public static Bitmap createDrawableFromView(Context context, View view) {
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        view.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-        view.buildDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
 
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
+   Bitmap getCircle(Double mag) throws IllegalArgumentException {
 
-        return bitmap;
+       int wh = (int)Math.floor(mag)*10;
+       int[] color = new int[wh*wh];
+       int c;
+       if(mag>=6.0){
+        c= Color.rgb(0,0,0);
+       }
+       else if(mag>=6.0){
+        c= Color.rgb(255-wh+20,0,0);
+       }
+       else if(mag>=4.0){
+        c= Color.rgb(85-wh,0,255-wh);
+       }else if(mag>=4.0){
+        c= Color.rgb(255-wh,0,0);
+       }else if(mag>=3.0){
+        c= Color.rgb(0,208-wh,255-wh);
+       }else if(mag>=2.0){
+        c= Color.rgb(209-wh,247-wh,255-wh);
+        }else{
+        c= Color.rgb(255-wh,255-wh,255-wh);
+       }
+
+       for(int i = 0 ;i<color.length;i++){
+           color[i]=c;
+       }
+
+
+        Bitmap a =Bitmap.createBitmap(color,wh,wh, Bitmap.Config.RGB_565);
+        Canvas can = new Canvas();
+        int radius = 100;
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.parseColor("#CD5C5C"));
+        //can.drawCircle(Float.parseFloat(mag),Float.parseFloat(mag),radius,paint);
+
+
+
+        return getRoundedBitmap(a) ;
+    }
+
+    public static Bitmap getRoundedBitmap(Bitmap bitmap) {
+        final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Canvas canvas = new Canvas(output);
+
+        final int color = Color.RED;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawOval(rectF, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        bitmap.recycle();
+
+        return output;
     }
 }

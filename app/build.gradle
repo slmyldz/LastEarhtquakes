@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'selim'
+            keyPassword '3253303'
+            storeFile file('C:/Users/P-User/keystores/app.keystore.jks')
+            storePassword '3253303'
+        }
+    }
+    compileSdkVersion 21
+    buildToolsVersion "20.0.0"
+    defaultConfig {
+        applicationId "lastearthquake.deepkod.com.lastearhtquake"
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.google.android.gms:play-services:6.1.+'
+    compile 'com.loopj.android:android-async-http:1.4.6'
+    compile 'com.google.code.gson:gson:1.7.2'
+    compile 'joda-time:joda-time:2.3'
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
